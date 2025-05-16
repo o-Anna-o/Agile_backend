@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: agile_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Alfapostgre2608
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    command: >
+      sh -c "./wait-for-db.sh db python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app 
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://postgres:Alfapostgre2608@db:5432/agile_db
+
+volumes:
+  postgres_data:
